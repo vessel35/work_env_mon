@@ -1,0 +1,7 @@
+#
+# YouTubeGuard 가 쓰는 pf 앵커.
+# 표(ytguard)가 비어 있으면 아무것도 막지 않는다.
+# 차단 시간이 되면 데몬이 이 표에 YouTube 주소를 채워 넣는다.
+#
+table <ytguard> persist
+block drop out quick proto { tcp, udp } from any to <ytguard>

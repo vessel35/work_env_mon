@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.vincent.ytguard.daemon</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/libexec/ytguardd</string>
+    </array>
+
+    <!-- 부팅하자마자 뜨고, 어떤 이유로 멈추더라도 다시 띄운다. -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>5</integer>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Library/Logs/YouTubeGuard/daemon.err.log</string>
+</dict>
+</plist>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #F5F6F7; }
+    a { color: #B4262A; } a:hover { color: #8C1D20; }
+    .sheet {
+      font-family: "IBM Plex Sans KR", -apple-system, system-ui, sans-serif;
+      color: #14161A;
+      padding: 48px;
+      box-sizing: border-box;
+      min-height: 100%;
+    }
+    .mono {
+      font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .rule { height: 1px; background: #D5D8DC; border: 0; margin: 0; }
+    .eyebrow {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #6B7079;
+    }
+  </style>
+</helmet>
+
+<div class="sheet">
+
+  <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+    <defs>
+      <symbol id="s-block" viewBox="0 0 24 24">
+        <path fill="currentColor" fill-rule="evenodd" d="M12 2.2L20.4 5.15V11.9C20.4 16.65 17 20.3 12 21.8C7 20.3 3.6 16.65 3.6 11.9V5.15Z M8.85 10.75H15.15A1.25 1.25 0 0 1 15.15 13.25H8.85A1.25 1.25 0 0 1 8.85 10.75Z"></path>
+      </symbol>
+      <symbol id="s-allow" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="M12 2.2L20.4 5.15V11.9C20.4 16.65 17 20.3 12 21.8C7 20.3 3.6 16.65 3.6 11.9V5.15Z"></path>
+        <path fill="currentColor" d="M10.1 8.9L15.9 12L10.1 15.1Z"></path>
+      </symbol>
+      <symbol id="s-off" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" d="M12 2.2L20.4 5.15V11.9C20.4 16.65 17 20.3 12 21.8C7 20.3 3.6 16.65 3.6 11.9V5.15Z"></path>
+        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5.6 5.6L18.4 18.4"></path>
+      </symbol>
+      <symbol id="s-warn" viewBox="0 0 24 24">
+        <path fill="currentColor" fill-rule="evenodd" d="M12 2.2L20.4 5.15V11.9C20.4 16.65 17 20.3 12 21.8C7 20.3 3.6 16.65 3.6 11.9V5.15Z M10.85 8.05A1.15 1.15 0 0 1 13.15 8.05V12.45A1.15 1.15 0 0 1 10.85 12.45Z M13.35 15.95A1.35 1.35 0 1 1 10.65 15.95A1.35 1.35 0 1 1 13.35 15.95Z"></path>
+      </symbol>
+      <symbol id="s-mark" viewBox="0 0 24 24">
+        <path fill="currentColor" fill-rule="evenodd" d="M12 2.2L20.4 5.15V11.9C20.4 16.65 17 20.3 12 21.8C7 20.3 3.6 16.65 3.6 11.9V5.15Z M10.1 8.9L15.9 12L10.1 15.1Z"></path>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px">
+    <div>
+      <div class="eyebrow" style="margin-bottom: 6px">방패와 재생 · 아이콘 체계</div>
+      <div style="font-size: 30px; font-weight: 600; letter-spacing: -0.01em">YouTubeGuard</div>
+    </div>
+    <div class="mono" style="font-size: 11px; color: #6B7079; text-align: right; line-height: 1.7">
+      24 × 24 그리드<br>메뉴 바 18pt · 앱 1024pt
+    </div>
+  </div>
+
+  <hr class="rule" style="margin: 24px 0 28px">
+
+  <div class="eyebrow" style="margin-bottom: 16px">상태 네 가지</div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px">
+
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E5E9">
+      <svg style="width: 84px; height: 84px; color: #FF383C"><use href="#s-block"></use></svg>
+      <div>
+        <div style="font-size: 15px; font-weight: 600">차단 중</div>
+        <div class="mono" style="font-size: 11px; color: #6B7079; margin-top: 3px">#FF383C</div>
+        <div style="font-size: 12px; color: #4A4F57; margin-top: 8px; line-height: 1.5">채운 방패에 가로 막대를 뚫었습니다. 네 상태 가운데 가장 무겁게 보여 눈에 먼저 들어옵니다.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E5E9">
+      <svg style="width: 84px; height: 84px; color: #34C658"><use href="#s-allow"></use></svg>
+      <div>
+        <div style="font-size: 15px; font-weight: 600">허용 중</div>
+        <div class="mono" style="font-size: 11px; color: #6B7079; margin-top: 3px">#34C658</div>
+        <div style="font-size: 12px; color: #4A4F57; margin-top: 8px; line-height: 1.5">선으로만 그린 방패 안에 재생 삼각형이 있습니다. 영상이 지나갈 수 있다는 뜻입니다.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E5E9">
+      <svg style="width: 84px; height: 84px; color: #8E8E92"><use href="#s-off"></use></svg>
+      <div>
+        <div style="font-size: 15px; font-weight: 600">꺼짐</div>
+        <div class="mono" style="font-size: 11px; color: #6B7079; margin-top: 3px">#8E8E92</div>
+        <div style="font-size: 12px; color: #4A4F57; margin-top: 8px; line-height: 1.5">방패 안이 비고 사선이 지납니다. 지키는 것이 없다는 뜻입니다.</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 20px; background: #FFFFFF; border: 1px solid #E2E5E9">
+      <svg style="width: 84px; height: 84px; color: #FF8D28"><use href="#s-warn"></use></svg>
+      <div>
+        <div style="font-size: 15px; font-weight: 600">데몬 이상</div>
+        <div class="mono" style="font-size: 11px; color: #6B7079; margin-top: 3px">#FF8D28</div>
+        <div style="font-size: 12px; color: #4A4F57; margin-top: 8px; line-height: 1.5">채운 방패에 느낌표를 뚫었습니다. 지금 삼각형 표지를 쓰던 자리를 방패로 되돌렸습니다.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="rule" style="margin: 32px 0 28px">
+
+  <div style="display: flex; gap: 40px; align-items: flex-start">
+
+    <div style="flex-grow: 1">
+      <div class="eyebrow" style="margin-bottom: 16px">실제 크기 · 18pt</div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center; gap: 22px; background: #ECEDEE; border: 1px solid #DCDEE1; padding: 0 20px; height: 46px">
+          <svg style="width: 18px; height: 18px; color: #FF383C"><use href="#s-block"></use></svg>
+          <svg style="width: 18px; height: 18px; color: #34C658"><use href="#s-allow"></use></svg>
+          <svg style="width: 18px; height: 18px; color: #8E8E92"><use href="#s-off"></use></svg>
+          <svg style="width: 18px; height: 18px; color: #FF8D28"><use href="#s-warn"></use></svg>
+          <div class="mono" style="font-size: 10px; color: #7A7F87; margin-left: auto">밝은 메뉴 바</div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 22px; background: #2A2C30; border: 1px solid #34373C; padding: 0 20px; height: 46px">
+          <svg style="width: 18px; height: 18px; color: #FF383C"><use href="#s-block"></use></svg>
+          <svg style="width: 18px; height: 18px; color: #34C658"><use href="#s-allow"></use></svg>
+          <svg style="width: 18px; height: 18px; color: #8E8E92"><use href="#s-off"></use></svg>
+          <svg style="width: 18px; height: 18px; color: #FF8D28"><use href="#s-warn"></use></svg>
+          <div class="mono" style="font-size: 10px; color: #8C919A; margin-left: auto">어두운 메뉴 바</div>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; color: #4A4F57; margin-top: 14px; line-height: 1.6; max-width: 430px">
+        회색조로 바꿔도 넷이 구별됩니다. 채운 방패 둘은 안에 뚫린 모양이 다르고, 선 방패 둘은 삼각형과 사선으로 갈립니다.
+      </div>
+    </div>
+
+    <div>
+      <div class="eyebrow" style="margin-bottom: 16px">앱 아이콘</div>
+      <div style="display: flex; align-items: flex-end; gap: 20px">
+        <div style="width: 148px; height: 148px; border-radius: 34px; background: linear-gradient(#2E323A, #1A1D22); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.10)">
+          <svg style="width: 88px; height: 88px; color: #FF383C"><use href="#s-mark"></use></svg>
+        </div>
+        <div style="width: 64px; height: 64px; border-radius: 15px; background: linear-gradient(#2E323A, #1A1D22); display: flex; align-items: center; justify-content: center">
+          <svg style="width: 38px; height: 38px; color: #FF383C"><use href="#s-mark"></use></svg>
+        </div>
+        <div style="width: 32px; height: 32px; border-radius: 7px; background: linear-gradient(#2E323A, #1A1D22); display: flex; align-items: center; justify-content: center">
+          <svg style="width: 19px; height: 19px; color: #FF383C"><use href="#s-mark"></use></svg>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #4A4F57; margin-top: 14px; line-height: 1.6; max-width: 300px">
+        번들 아이콘은 상태를 담지 않고 정체만 담습니다. 방패에 재생 삼각형을 뚫은 이 모양이 이 앱의 표지입니다.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

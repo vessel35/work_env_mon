@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.vincent.ytguard.menubar</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/YouTubeGuard.app/Contents/MacOS/YouTubeGuard</string>
+    </array>
+
+    <!-- 로그인할 때 한 번 띄운다.
+         사용자가 메뉴에서 직접 닫은 경우에는 다시 띄우지 않는다. -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <false/>
+
+    <key>LimitLoadToSessionType</key>
+    <string>Aqua</string>
+</dict>
+</plist>
