@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; background: #F5F6F7; }
+    a { color: #B4262A; } a:hover { color: #8C1D20; }
+    .sheet { font-family: "IBM Plex Sans KR", -apple-system, system-ui, sans-serif; color: #14161A; padding: 32px; box-sizing: border-box; min-height: 100%; }
+    .eyebrow { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B7079; }
+    .rule { height: 1px; background: #D5D8DC; border: 0; margin: 0; }
+    .cap { font-size: 10px; color: #7A7F87; text-align: center; margin-top: 8px; }
+  </style>
+</helmet>
+<div class="sheet">
+  <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+    <defs>
+      <symbol id="d-block" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M7.6 4.6L20.8 12L7.6 19.4Z M10.75 10.9H15.25A1.1 1.1 0 0 1 15.25 13.1H10.75A1.1 1.1 0 0 1 10.75 10.9Z"></path></symbol>
+      <symbol id="d-allow" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M7.6 4.6L20.8 12L7.6 19.4Z"></path></symbol>
+      <mask id="cut-off" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+        <rect x="0" y="0" width="24" height="24" fill="#fff"></rect>
+        <path fill="none" stroke="#000" stroke-width="4.2" stroke-linecap="round" d="M5.4 5.4L18.6 18.6"></path>
+      </mask>
+      <symbol id="d-off" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" mask="url(#cut-off)" d="M7.6 4.6L20.8 12L7.6 19.4Z"></path>
+        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5.4 5.4L18.6 18.6"></path>
+      </symbol>
+      <symbol id="d-warn" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M7.6 4.6L20.8 12L7.6 19.4Z M9.9 9.15A1.05 1.05 0 0 1 12 9.15V13.1A1.05 1.05 0 0 1 9.9 13.1Z M12.1 16.35A1.2 1.2 0 1 1 9.7 16.35A1.2 1.2 0 1 1 12.1 16.35Z"></path></symbol>
+    </defs>
+  </svg>
+
+  <div class="eyebrow" style="margin-bottom: 6px">다른 방향</div>
+  <div style="font-size: 20px; font-weight: 600; letter-spacing: -0.01em">재생 표지</div>
+  <div style="font-size: 12px; color: #4A4F57; margin-top: 6px; line-height: 1.55">방패를 버리고 재생 삼각형 하나로 갑니다. 지키는 일보다 무엇을 막는지를 앞세운 방향입니다.</div>
+
+  <hr class="rule" style="margin: 20px 0">
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+    <div><svg style="width: 100%; height: 62px; color: #FF383C"><use href="#d-block"></use></svg><div class="cap">차단 중</div></div>
+    <div><svg style="width: 100%; height: 62px; color: #34C658"><use href="#d-allow"></use></svg><div class="cap">허용 중</div></div>
+    <div><svg style="width: 100%; height: 62px; color: #8E8E92"><use href="#d-off"></use></svg><div class="cap">꺼짐</div></div>
+    <div><svg style="width: 100%; height: 62px; color: #FF8D28"><use href="#d-warn"></use></svg><div class="cap">이상</div></div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 20px; background: #2A2C30; padding: 0 18px; height: 42px; margin-top: 22px">
+    <svg style="width: 18px; height: 18px; color: #FF383C"><use href="#d-block"></use></svg>
+    <svg style="width: 18px; height: 18px; color: #34C658"><use href="#d-allow"></use></svg>
+    <svg style="width: 18px; height: 18px; color: #8E8E92"><use href="#d-off"></use></svg>
+    <svg style="width: 18px; height: 18px; color: #FF8D28"><use href="#d-warn"></use></svg>
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8C919A; margin-left: auto">18pt</div>
+  </div>
+
+  <hr class="rule" style="margin: 22px 0 16px">
+
+  <div style="display: flex; flex-direction: column; gap: 12px">
+    <div>
+      <div class="eyebrow" style="margin-bottom: 5px">얻는 것</div>
+      <div style="font-size: 12px; color: #14161A; line-height: 1.55">영상이라는 것이 한눈에 읽힙니다. 실루엣이 단순해 아주 작게 그려도 뭉개지지 않습니다.</div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom: 5px">잃는 것</div>
+      <div style="font-size: 12px; color: #4A4F57; line-height: 1.55">지키는 느낌이 사라집니다. 재생 삼각형은 흔해서 다른 미디어 앱과 섞여 보일 수 있습니다.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
