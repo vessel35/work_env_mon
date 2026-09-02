@@ -122,7 +122,7 @@ private final class IndicatorView: NSView {
         background.layer?.masksToBounds = true
         addSubview(background)
 
-        let inset = frameRect.width * 0.22
+        let inset = frameRect.width * 0.20
         imageView.frame = bounds.insetBy(dx: inset, dy: inset)
         imageView.autoresizingMask = [.width, .height]
         imageView.imageScaling = .scaleProportionallyUpOrDown

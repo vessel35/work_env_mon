@@ -33,9 +33,17 @@ echo "==> 메뉴 바 앱을 빌드합니다"
 mkdir -p "${APP}/Contents/MacOS" "${APP}/Contents/Resources"
 swiftc -O -target "$TARGET" -o "${APP}/Contents/MacOS/YouTubeGuard" \
     src/shared/*.swift \
+    src/icon/IconArt.swift \
     src/menubar/*.swift \
     -framework Cocoa
 cp src/menubar/Info.plist "${APP}/Contents/Info.plist"
+
+echo "==> 앱 아이콘을 그립니다"
+swiftc -O -target "$TARGET" -o "${BUILD}/ytguard-makeicon" \
+    src/icon/*.swift \
+    -framework Cocoa
+"${BUILD}/ytguard-makeicon" "${BUILD}/AppIcon.iconset"
+iconutil -c icns "${BUILD}/AppIcon.iconset" -o "${APP}/Contents/Resources/AppIcon.icns"
 
 echo "==> 서명합니다"
 # 배포용 인증서 없이 이 기기에서만 쓰는 서명이다.

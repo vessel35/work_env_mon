@@ -53,28 +53,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     /// 아이콘이 나타내는 상태. 이 값이 달라질 때만 그림을 다시 넣는다.
     /// 모양과 색을 함께 다르게 두어, 색을 구별하기 어려운 경우에도
-    /// 방패의 생김새만으로 알아볼 수 있게 했다.
+    /// 방패의 생김새만으로 알아볼 수 있다. 도형은 IconArt 에 있다.
     private enum IconState: Equatable {
         case unresponsive   // 데몬이 응답하지 않음
         case disabled       // 차단 기능이 꺼져 있음
         case blocking       // 지금 막고 있음
         case idle           // 켜져 있지만 지금은 허용 시간
 
-        var symbolName: String {
+        var art: IconArt.State {
             switch self {
-            case .unresponsive: return "exclamationmark.triangle.fill"
-            case .disabled: return "shield.slash.fill"
-            case .blocking: return "shield.fill"
-            case .idle: return "checkmark.shield.fill"
-            }
-        }
-
-        var color: NSColor {
-            switch self {
-            case .unresponsive: return .systemOrange
-            case .disabled: return .systemGray
-            case .blocking: return .systemRed
-            case .idle: return .systemGreen
+            case .unresponsive: return .unresponsive
+            case .disabled: return .off
+            case .blocking: return .blocking
+            case .idle: return .allowed
             }
         }
 
@@ -87,18 +78,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             }
         }
 
-        /// 메뉴 바에 올릴 그림을 만든다.
-        /// 템플릿으로 두면 메뉴 바가 색을 무시하고 검게 그리므로,
-        /// 색을 직접 입힌 뒤 템플릿 표시를 꺼서 그 색 그대로 나오게 한다.
-        func makeImage() -> NSImage? {
-            guard let base = NSImage(systemSymbolName: symbolName,
-                                     accessibilityDescription: accessibilityDescription) else {
-                return nil
-            }
-            let configuration = NSImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
-                .applying(NSImage.SymbolConfiguration(paletteColors: [color]))
-            let image = base.withSymbolConfiguration(configuration) ?? base
-            image.isTemplate = false
+        /// 메뉴 바에 올릴 그림. 18pt 는 메뉴 바 아이콘이 앉는 크기다.
+        func makeImage(pointSize: CGFloat = 18) -> NSImage {
+            let image = IconArt.statusImage(art, pointSize: pointSize)
+            image.accessibilityDescription = accessibilityDescription
             return image
         }
     }
@@ -380,13 +363,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             (.unresponsive, "데몬 응답 없음"),
         ]
         for (state, label) in cases {
-            guard let image = state.makeImage() else {
-                lines.append("  \(label): 그림을 만들지 못했습니다 (\(state.symbolName))")
-                continue
-            }
+            let image = state.makeImage(pointSize: 64)
             let c = averageColor(of: image)
             let template = image.isTemplate ? "템플릿 켜짐 (색이 무시됩니다)" : "템플릿 꺼짐"
-            lines.append("  \(label) · \(state.symbolName) · rgb(\(c.r),\(c.g),\(c.b)) · \(template)")
+            lines.append("  \(label) · rgb(\(c.r),\(c.g),\(c.b)) · \(template)")
         }
         return lines.joined(separator: "\n")
     }
