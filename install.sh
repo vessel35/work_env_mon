@@ -216,7 +216,7 @@ fi
 
 echo
 if pgrep -f "/Applications/YouTubeGuard.app" >/dev/null 2>&1; then
-    echo "메뉴 바 앱이 돌고 있습니다. 각 화면 오른쪽 위의 방패 표시기로 상태를 볼 수 있습니다."
+    echo "메뉴 바 앱이 돌고 있습니다. 메뉴 바의 방패 아이콘으로 상태를 볼 수 있습니다."
 else
     echo "메뉴 바 앱이 보이지 않습니다. 응용 프로그램 폴더의 YouTubeGuard 를 실행해 주세요."
 fi

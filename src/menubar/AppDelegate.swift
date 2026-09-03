@@ -6,16 +6,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private var statusItem: NSStatusItem!
     private let menu = NSMenu()
-    /// 표시기에서 여는 메뉴. 상태 항목에 붙은 메뉴를 그대로 다시 열면
-    /// 이미 붙어 있는 메뉴를 두 곳에서 쓰게 되므로 따로 둔다.
-    /// 항목을 채우는 곳이 menuNeedsUpdate 하나뿐이라 내용은 늘 같다.
-    private let indicatorMenu = NSMenu()
     private let editor = ScheduleEditor()
     private var timer: Timer?
     private var state: BlockState?
     private var lastIconState: IconState?
-    private let indicator = ScreenIndicator()
-    private var currentImage: NSImage?
 
     /// 메뉴 바에서 아이콘이 앉을 자리를 기억하는 이름.
     /// 이 이름을 주어야 사용자가 Command 키로 옮겨 둔 자리가 다음 실행에도 남는다.
@@ -28,21 +22,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.delegate = self
         statusItem.menu = menu
 
-        indicatorMenu.delegate = self
-        indicator.menu = indicatorMenu
-        indicator.isVisible = showsScreenIndicator
-
         refresh()
         timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
             self?.refresh()
         }
-    }
-
-    /// 화면 표시기를 띄울지에 대한 설정.
-    /// 메뉴 바 자리가 모자라 아이콘이 잘리는 경우가 많아 기본값을 켜짐으로 둔다.
-    private var showsScreenIndicator: Bool {
-        get { UserDefaults.standard.object(forKey: "ShowScreenIndicator") as? Bool ?? true }
-        set { UserDefaults.standard.set(newValue, forKey: "ShowScreenIndicator") }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -105,8 +88,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // 매번 그림을 다시 넣으면 화면마다 메뉴 바가 계속 다시 그려진다.
         // 실제로 상태가 달라졌을 때만 손댄다.
         if iconState != lastIconState {
-            currentImage = iconState.makeImage()
-            button.image = currentImage
+            button.image = iconState.makeImage()
             // 색을 직접 입힌 그림이므로 덧칠이 끼어들지 않게 비워 둔다.
             button.contentTintColor = nil
             lastIconState = iconState
@@ -115,7 +97,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         // 설명 글은 다시 그리는 일이 없으므로 매번 갱신해도 괜찮다.
         let tooltip = StatusText.tooltip(state, now: now)
         button.toolTip = tooltip
-        indicator.update(image: currentImage, tooltip: tooltip)
     }
 
     // MARK: 메뉴 만들기
@@ -164,8 +145,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
         menu.addItem(actionItem("차단 시간 편집…", #selector(openTimeEditor)))
         menu.addItem(actionItem("차단 대상 편집…", #selector(openTargetEditor)))
-        menu.addItem(actionItem(showsScreenIndicator ? "화면 표시기 감추기" : "모든 화면에 표시기 띄우기",
-                                #selector(toggleScreenIndicator)))
         menu.addItem(actionItem("기록 보기", #selector(openLog)))
         menu.addItem(.separator())
         menu.addItem(actionItem("메뉴 바에서 닫기…", #selector(quitApp)))
@@ -293,18 +272,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             message: "곧바로 정해진 시간표대로 돌아갑니다. 지금이 차단 시간이면 다시 막힙니다.",
             proceedTitle: "그만두기") else { return }
         apply { $0.snoozeUntil = nil }
-    }
-
-    /// 메뉴 바 자리가 모자라 아이콘이 잘리는 경우를 위해,
-    /// 화면마다 떠 있는 표시기를 켜고 끈다. 차단 동작에는 영향이 없다.
-    @objc private func toggleScreenIndicator() {
-        let turnOn = !showsScreenIndicator
-        showsScreenIndicator = turnOn
-        indicator.isVisible = turnOn
-        if turnOn {
-            Dialogs.info(title: "화면 표시기를 띄웠습니다",
-                         message: "연결된 모든 화면의 오른쪽 위에 작은 방패가 나타납니다.\n눌러서 메뉴를 열 수 있고, 이 메뉴에서 다시 감출 수 있습니다.")
-        }
     }
 
     @objc private func openTimeEditor() {
