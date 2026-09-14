@@ -121,8 +121,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
 
         let enabled = state?.enabled ?? false
-        menu.addItem(actionItem(enabled ? "차단 기능 끄기…" : "차단 기능 켜기…",
-                                #selector(toggleEnabled)))
+        if enabled {
+            menu.addItem(disableSubmenu())
+        } else {
+            menu.addItem(actionItem("차단 기능 켜기…", #selector(enableBlocking)))
+        }
 
         menu.addItem(durationSubmenu(title: "지금 바로 차단",
                                      minutes: [30, 60, 120, 240],
@@ -192,33 +195,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: 조작. 모두 확인 대화상자를 거친다.
 
-    @objc private func toggleEnabled() {
-        let enabled = state?.enabled ?? false
+    /// 끄기는 기한을 함께 고르게 한다.
+    private func disableSubmenu() -> NSMenuItem {
+        let parent = NSMenuItem(title: "차단 기능 끄기", action: nil, keyEquivalent: "")
+        let submenu = NSMenu()
+        for span in Schedule.DisableSpan.allCases {
+            let item = NSMenuItem(title: span.title + "…",
+                                  action: #selector(disableBlocking(_:)),
+                                  keyEquivalent: "")
+            item.target = self
+            item.representedObject = span
+            submenu.addItem(item)
+        }
+        parent.submenu = submenu
+        return parent
+    }
 
-        if enabled {
-            let extra = state?.blocking == true
-                ? "\n\n지금 차단 중이므로 곧바로 풀립니다."
-                : ""
-            guard Dialogs.confirm(
-                title: "차단 기능을 끌까요?",
-                message: "정해진 시간이 되어도 YouTube 를 막지 않습니다.\(extra)",
-                proceedTitle: "끄기",
-                destructive: true) else { return }
+    @objc private func disableBlocking(_ sender: NSMenuItem) {
+        guard let span = sender.representedObject as? Schedule.DisableSpan else { return }
+        let now = Date()
+        let expiry = span.expiry(from: now)
 
-            apply { config in
-                config.enabled = false
-                config.forceBlockUntil = nil
-            }
-        } else {
-            guard Dialogs.confirm(
-                title: "차단 기능을 켤까요?",
-                message: "정해 둔 시간이 되면 YouTube 접속을 막습니다.\n지금이 그 시간에 들어 있다면 곧바로 막힙니다.",
-                proceedTitle: "켜기") else { return }
+        let comingBack = expiry.map { "\(StatusText.timeLabel($0, now: now))에 저절로 다시 켜집니다." }
+            ?? "직접 다시 켤 때까지 꺼져 있습니다."
+        let nowBlocking = state?.blocking == true ? "\n지금 차단 중이므로 곧바로 풀립니다." : ""
 
-            apply { config in
-                config.enabled = true
-                config.snoozeUntil = nil
-            }
+        guard Dialogs.confirm(
+            title: span.confirmTitle,
+            message: "정해진 시간이 되어도 막지 않습니다.\n\(comingBack)\(nowBlocking)",
+            proceedTitle: "끄기",
+            destructive: true) else { return }
+
+        apply { config in
+            config.enabled = false
+            config.disabledUntil = expiry
+            config.forceBlockUntil = nil
+        }
+    }
+
+    @objc private func enableBlocking() {
+        guard Dialogs.confirm(
+            title: "차단 기능을 켤까요?",
+            message: "정해 둔 시간이 되면 접속을 막습니다.\n지금이 그 시간에 들어 있다면 곧바로 막힙니다.",
+            proceedTitle: "켜기") else { return }
+
+        apply { config in
+            config.enabled = true
+            config.disabledUntil = nil
+            config.snoozeUntil = nil
         }
     }
 
@@ -236,6 +260,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         apply { config in
             config.enabled = true
+            config.disabledUntil = nil
             config.forceBlockUntil = until
             config.snoozeUntil = nil
         }

@@ -85,6 +85,10 @@ struct Config: Codable, Equatable {
     /// 직접 적어 넣은 주소. 서비스 목록에 없는 곳을 막을 때 쓴다.
     var customHosts: [String]
 
+    /// 전체 스위치를 껐을 때, 이 시각이 지나면 저절로 다시 켜진다.
+    /// nil 이면 직접 켤 때까지 계속 꺼져 있다.
+    var disabledUntil: Date?
+
     /// 이 시각까지는 스케줄을 무시하고 통과시킨다(일시 해제).
     var snoozeUntil: Date?
     /// 이 시각까지는 스케줄과 무관하게 차단한다(즉시 차단).
@@ -107,6 +111,7 @@ struct Config: Codable, Equatable {
                           end: DayTime(hour: 18, minute: 0))],
         services: ["youtube"],
         customHosts: [],
+        disabledUntil: nil,
         snoozeUntil: nil,
         forceBlockUntil: nil,
         blockMediaHosts: true,
@@ -128,12 +133,32 @@ extension Config {
         rules = try container.decodeIfPresent([BlockRule].self, forKey: .rules) ?? fallback.rules
         services = try container.decodeIfPresent([String].self, forKey: .services) ?? fallback.services
         customHosts = try container.decodeIfPresent([String].self, forKey: .customHosts) ?? fallback.customHosts
+        disabledUntil = try container.decodeIfPresent(Date.self, forKey: .disabledUntil)
         snoozeUntil = try container.decodeIfPresent(Date.self, forKey: .snoozeUntil)
         forceBlockUntil = try container.decodeIfPresent(Date.self, forKey: .forceBlockUntil)
         blockMediaHosts = try container.decodeIfPresent(Bool.self, forKey: .blockMediaHosts) ?? fallback.blockMediaHosts
         hardenDoH = try container.decodeIfPresent(Bool.self, forKey: .hardenDoH) ?? fallback.hardenDoH
         usePacketFilter = try container.decodeIfPresent(Bool.self, forKey: .usePacketFilter) ?? fallback.usePacketFilter
         updatedAt = try container.decodeIfPresent(Date.self, forKey: .updatedAt)
+    }
+}
+
+
+extension Config {
+    /// 지금 이 순간 차단 기능이 켜져 있는 것으로 볼지.
+    ///
+    /// 기한을 붙여 끈 경우, 그 시각이 지나면 저절로 켜진 것으로 본다.
+    /// 설정 파일을 데몬이 고쳐 쓰지 않아도 되도록 읽는 쪽에서 판단한다.
+    func isEnabled(at now: Date) -> Bool {
+        if enabled { return true }
+        if let until = disabledUntil { return until <= now }
+        return false
+    }
+
+    /// 꺼 둔 것이 저절로 풀리는 시각. 계속 꺼 둔 경우에는 nil.
+    func disabledExpiry(at now: Date) -> Date? {
+        guard !enabled, let until = disabledUntil, until > now else { return nil }
+        return until
     }
 }
 
