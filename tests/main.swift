@@ -503,6 +503,113 @@ do {
     check(false, "설정을 저장했다 읽지 못했습니다: \(error)")
 }
 
+
+// MARK: 기한을 붙인 끄기
+
+section("기한을 붙인 끄기")
+
+do {  // 기한이 남아 있으면 스케줄을 보지 않는다
+    var off = config
+    off.enabled = false
+    off.disabledUntil = date(2026, 9, 3, 0, 0)
+    let d = Schedule.decide(config: off, now: date(2026, 9, 2, 10, 0))
+    check(!d.blocking, "기한이 남은 끄기는 차단하지 않음")
+    equal(d.reason, .disabled, "이유는 전체 꺼짐")
+    equal(d.until, date(2026, 9, 3, 0, 0), "언제 다시 켜지는지 함께 알려 줌")
+    equal(d.nextChange, date(2026, 9, 3, 0, 0), "다음 변화도 그 시각")
+}
+
+do {  // 기한이 지나면 저절로 켜진다
+    var off = config
+    off.enabled = false
+    off.disabledUntil = date(2026, 9, 3, 0, 0)
+    let d = Schedule.decide(config: off, now: date(2026, 9, 3, 10, 0))
+    check(d.blocking, "기한이 지나면 설정 파일을 고치지 않아도 스케줄이 되살아남")
+    equal(d.reason, .schedule, "이유는 스케줄")
+}
+
+do {  // 기한이 지난 뒤 허용 시간이면 그냥 통과
+    var off = config
+    off.enabled = false
+    off.disabledUntil = date(2026, 9, 3, 0, 0)
+    let d = Schedule.decide(config: off, now: date(2026, 9, 3, 20, 0))
+    check(!d.blocking, "기한이 지났어도 허용 시간이면 막지 않음")
+    equal(d.reason, .idle, "이유는 스케줄 밖")
+}
+
+do {  // 기한 없이 끈 경우
+    var off = config
+    off.enabled = false
+    off.disabledUntil = nil
+    let d = Schedule.decide(config: off, now: date(2026, 9, 2, 10, 0))
+    check(!d.blocking, "기한 없이 끄면 계속 꺼져 있음")
+    equal(d.reason, .disabled, "이유는 전체 꺼짐")
+    check(d.until == nil, "저절로 켜지는 시각이 없음")
+}
+
+do {  // 켜져 있으면 기한은 쳐다보지 않는다
+    var on = config
+    on.enabled = true
+    on.disabledUntil = date(2026, 9, 3, 0, 0)
+    let d = Schedule.decide(config: on, now: date(2026, 9, 2, 10, 0))
+    check(d.blocking, "스위치가 켜져 있으면 남아 있는 기한은 무시함")
+}
+
+do {
+    var off = Config.default
+    off.enabled = false
+    off.disabledUntil = date(2026, 9, 3, 0, 0)
+    check(!off.isEnabled(at: date(2026, 9, 2, 23, 59)), "기한 직전에는 꺼진 것으로 봄")
+    check(off.isEnabled(at: date(2026, 9, 3, 0, 0)), "기한이 되는 순간 켜진 것으로 봄")
+    equal(off.disabledExpiry(at: date(2026, 9, 2, 10, 0)), date(2026, 9, 3, 0, 0), "남은 기한을 알려 줌")
+    check(off.disabledExpiry(at: date(2026, 9, 3, 10, 0)) == nil, "지난 기한은 알려 주지 않음")
+}
+
+section("끄기 기한 계산")
+
+do {
+    let now = date(2026, 9, 2, 14, 30)
+    equal(Schedule.DisableSpan.today.expiry(from: now), date(2026, 9, 3, 0, 0), "오늘 하루는 다음 자정까지")
+    equal(Schedule.DisableSpan.week.expiry(from: now), date(2026, 9, 9, 0, 0), "일주일은 이레 뒤 자정까지")
+    check(Schedule.DisableSpan.forever.expiry(from: now) == nil, "계속은 끝나는 시각이 없음")
+}
+
+do {
+    // 자정 직전에 꺼도 오늘 하루는 그날이 끝날 때까지다
+    let lateNight = date(2026, 9, 2, 23, 50)
+    equal(Schedule.DisableSpan.today.expiry(from: lateNight), date(2026, 9, 3, 0, 0), "자정 직전에 꺼도 곧 다시 켜짐")
+}
+
+equal(Schedule.DisableSpan.allCases.count, 3, "고를 수 있는 기한은 셋")
+equal(Schedule.DisableSpan.allCases.map { $0.title }, ["오늘 하루", "일주일", "계속"], "메뉴에 보이는 차례")
+
+do {
+    let state = BlockState(blocking: false, enabled: false, reason: .disabled,
+                           activeUntil: date(2026, 9, 3, 0, 0),
+                           nextChange: date(2026, 9, 3, 0, 0),
+                           heartbeat: date(2026, 9, 2, 14, 0),
+                           hostsApplied: false, pfApplied: false,
+                           blockedHostCount: 0, lastError: nil)
+    equal(StatusText.headline(state, now: date(2026, 9, 2, 14, 0)),
+          "차단 기능 꺼짐 · 내일 00:00에 다시 켜집니다", "언제 돌아오는지 보여 줌")
+
+    var forever = state
+    forever.activeUntil = nil
+    forever.nextChange = nil
+    equal(StatusText.headline(forever, now: date(2026, 9, 2, 14, 0)),
+          "차단 기능이 꺼져 있습니다", "계속 꺼 둔 경우의 문구")
+}
+
+do {
+    // 예전 설정 파일에는 이 항목이 없다
+    let old = "{ \"enabled\" : false }"
+    let restored = try JSONStore.makeDecoder().decode(Config.self, from: Data(old.utf8))
+    check(restored.disabledUntil == nil, "빠진 기한은 비워 둠")
+    check(!restored.isEnabled(at: Date()), "예전처럼 계속 꺼진 상태로 읽힘")
+} catch {
+    check(false, "예전 설정을 읽지 못했습니다: \(error)")
+}
+
 // MARK: 마무리
 
 print("\n검사 \(checks) 개 가운데 \(failures) 개 실패")

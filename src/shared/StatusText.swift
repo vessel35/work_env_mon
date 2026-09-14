@@ -41,6 +41,9 @@ enum StatusText {
         }
         switch state.reason {
         case .disabled:
+            if let until = state.activeUntil {
+                return "차단 기능 꺼짐 · \(timeLabel(until, now: now))에 다시 켜집니다"
+            }
             return "차단 기능이 꺼져 있습니다"
         case .schedule:
             if let until = state.activeUntil {

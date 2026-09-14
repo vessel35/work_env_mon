@@ -3,6 +3,43 @@ import Foundation
 /// 규칙 목록과 현재 시각으로 "지금 차단해야 하는가"를 판정한다.
 enum Schedule {
 
+
+    /// 전체 스위치를 끌 때 함께 고르는 기한.
+    ///
+    /// 기한 없이 끄면 한 번의 선택이 며칠씩 조용히 이어진다.
+    /// 그래서 계속 꺼 두는 것은 따로 골라야만 되도록 두었다.
+    enum DisableSpan: CaseIterable {
+        case today      // 오늘이 끝날 때까지
+        case week       // 이레 뒤 자정까지
+        case forever    // 직접 켤 때까지
+
+        var title: String {
+            switch self {
+            case .today: return "오늘 하루"
+            case .week: return "일주일"
+            case .forever: return "계속"
+            }
+        }
+
+        var confirmTitle: String {
+            switch self {
+            case .today: return "오늘 하루 동안 차단 기능을 끌까요?"
+            case .week: return "일주일 동안 차단 기능을 끌까요?"
+            case .forever: return "차단 기능을 계속 꺼 둘까요?"
+            }
+        }
+
+        /// 저절로 다시 켜지는 시각. 계속 꺼 두는 경우에는 nil.
+        func expiry(from now: Date) -> Date? {
+            let midnight = calendar.startOfDay(for: now)
+            switch self {
+            case .today: return calendar.date(byAdding: .day, value: 1, to: midnight)
+            case .week: return calendar.date(byAdding: .day, value: 7, to: midnight)
+            case .forever: return nil
+            }
+        }
+    }
+
     struct Interval {
         var start: Date
         var end: Date
@@ -81,8 +118,10 @@ enum Schedule {
     /// 전체 스위치와 즉시 차단/일시 해제까지 반영한 최종 판정.
     /// 우선순위는 전체 스위치, 즉시 차단, 일시 해제, 스케줄 순이다.
     static func decide(config: Config, now: Date) -> (blocking: Bool, reason: BlockState.Reason, until: Date?, nextChange: Date?) {
-        guard config.enabled else {
-            return (false, .disabled, nil, nil)
+        // 기한을 붙여 꺼 둔 경우에는 그 시각이 다음 변화가 된다.
+        guard config.isEnabled(at: now) else {
+            let expiry = config.disabledExpiry(at: now)
+            return (false, .disabled, expiry, expiry)
         }
 
         if let forced = config.forceBlockUntil, forced > now {
